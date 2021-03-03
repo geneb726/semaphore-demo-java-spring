@@ -5,7 +5,7 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: Maven
+  - name: Build
     task:
       jobs:
         - name: Build
@@ -13,3 +13,15 @@ blocks:
             - checkout
             - sem-version java 1.8
             - mvn -B package --file pom.xml
+  - name: Test
+    task:
+      jobs:
+        - name: Unit tests
+          commands: []
+        - name: Integration tests
+          commands: []
+  - name: Performance tests
+    task:
+      jobs:
+        - name: Benchmark
+          commands: []
