@@ -11,17 +11,30 @@ blocks:
         - name: Build
           commands:
             - checkout
-            - sem-version java 1.8
-            - mvn -B package --file pom.xml
+            - cache restore
+            - 'mvn -q package jmeter:configure -Dmaven.test.skip=true'
+            - cache store
   - name: Test
     task:
       jobs:
         - name: Unit tests
-          commands: []
+          commands:
+            - mvn tests
         - name: Integration tests
-          commands: []
+          commands:
+            - mvn test -Pintegration-testing
+      prologue:
+        commands:
+          - checkout
+          - cache restore
+          - mvn -q test-compile -Dmaven.test.skip=true
   - name: Performance tests
     task:
       jobs:
         - name: Benchmark
-          commands: []
+          commands:
+            - java -version
+            - java -jar target/spring-pipeline-demo.jar > /dev/null &
+            - sleep 20
+            - 'mvn -q jmeter:jmeter'
+            - 'mvn jmeter:results'
